@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agente Experto Diagnóstico Salud</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 30px;
+        transition: background-image 1s ease-in-out;
+        background-image: url("img/fiebre.jpg"); /* fondo por defecto en carpeta local */
+      }
+      h1 {
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 6px #000;
+      }
+      label {
+        font-size: 18px;
+        margin: 8px 0;
+        text-shadow: 1px 1px 3px #000;
+        cursor: pointer;
+      }
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        max-width: 500px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      input[type="checkbox"] {
+        transform: scale(1.3);
+        margin-right: 8px;
+        cursor: pointer;
+      }
+      button {
+        padding: 12px 25px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        background-color: rgba(255, 255, 255, 0.8);
+        color: #333;
+        box-shadow: 2px 2px 8px #000;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background-color: rgba(230, 230, 230, 1);
+      }
+      #resultado {
+        margin-top: 30px;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 25px;
+        border-radius: 15px;
+        max-width: 600px;
+        box-shadow: 4px 4px 15px #000;
+        text-align: left;
+        font-size: 20px;
+        line-height: 1.4;
+      }
+      #resultado p {
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🩺 Agente Experto Diagnóstico Salud</h1>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="fiebre" /> Fiebre</label>
+      <label><input type="checkbox" value="cansancio" /> Cansancio</label>
+      <label><input type="checkbox" value="tos" /> Tos</label>
+      <label
+        ><input type="checkbox" value="dolor_cabeza" /> Dolor de cabeza</label
+      >
+      <label
+        ><input type="checkbox" value="dolor_garganta" /> Dolor de
+        garganta</label
+      >
+    </div>
+
+    <button onclick="diagnosticar()">Diagnosticar</button>
+
+    <div id="resultado">
+      <p>Selecciona al menos un síntoma y presiona Diagnosticar.</p>
+    </div>
+
+    <script>
+      const baseDatos = {
+        fiebre: {
+          diagnostico: "Fiebre detectada.",
+          recomendacion:
+            "Mantente hidratado y toma paracetamol para controlar la temperatura.",
+          fondo: "img/fiebre.jpg",
+        },
+        cansancio: {
+          diagnostico: "Cansancio identificado.",
+          recomendacion: "Descansa lo suficiente y evita esfuerzos intensos.",
+          fondo: "img/cansancio.jpg",
+        },
+        tos: {
+          diagnostico: "Tos detectada.",
+          recomendacion:
+            "Evita ambientes secos, hidrátate y usa miel para calmar la garganta.",
+          fondo: "img/tos.jpg",
+        },
+        dolor_cabeza: {
+          diagnostico: "Dolor de cabeza presente.",
+          recomendacion:
+            "Relájate, evita la luz fuerte y considera tomar analgésicos.",
+          fondo: "img/dolor_cabeza.jpg",
+        },
+        dolor_garganta: {
+          diagnostico: "Dolor de garganta identificado.",
+          recomendacion:
+            "Haz gárgaras con agua tibia y sal, y evita irritantes como el humo.",
+          fondo: "img/dolor_garganta.jpg",
+        },
+      };
+
+      let intervaloFondo = null;
+
+      function diagnosticar() {
+        const checkboxes = document.querySelectorAll(
+          'input[type="checkbox"]:checked'
+        );
+        const resultadoDiv = document.getElementById("resultado");
+
+        if (checkboxes.length === 0) {
+          resultadoDiv.innerHTML =
+            "<p>Por favor selecciona al menos un síntoma.</p>";
+          document.body.style.backgroundImage =
+            "url('imagenes/fondo_default.jpg')";
+          if (intervaloFondo) {
+            clearInterval(intervaloFondo);
+            intervaloFondo = null;
+          }
+          return;
+        }
+
+        let htmlResultado = "";
+        const imagenesFondo = [];
+
+        checkboxes.forEach((chk) => {
+          const clave = chk.value;
+          if (baseDatos[clave]) {
+            const item = baseDatos[clave];
+            htmlResultado += `<p><strong>${item.diagnostico}</strong><br>${item.recomendacion}</p>`;
+            imagenesFondo.push(item.fondo);
+          }
+        });
+
+        resultadoDiv.innerHTML = htmlResultado;
+
+        if (intervaloFondo) {
+          clearInterval(intervaloFondo);
+          intervaloFondo = null;
+        }
+
+        if (imagenesFondo.length === 1) {
+          document.body.style.backgroundImage = `url('${imagenesFondo[0]}')`;
+        } else {
+          let idx = 0;
+          document.body.style.backgroundImage = `url('${imagenesFondo[0]}')`;
+          intervaloFondo = setInterval(() => {
+            idx = (idx + 1) % imagenesFondo.length;
+            document.body.style.backgroundImage = `url('${imagenesFondo[idx]}')`;
+          }, 3000);
+        }
+      }
+    </script>
+  </body>
+</html>
